@@ -1,0 +1,66 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Example of Cognito UserPool
+Parameters:
+  Stage:
+    Description: Environment
+    Type: String
+
+Resources:
+  MoodleUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      AliasAttributes: 
+        - email
+        - phone_number
+        - preferred_username
+      AutoVerifiedAttributes:
+        - email
+        # - phone_number
+      Schema:
+        - AttributeDataType: String
+          DeveloperOnlyAttribute: false
+          Mutable: true
+          Name: email
+          Required: true
+      DeviceConfiguration: 
+        DeviceOnlyRememberedOnUserPrompt: true    
+      UserPoolName: !Sub ${Stage}_moodle_pool
+
+  MoodleClientPool:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+        ClientName: !Sub ${Stage}_client_pool
+        ExplicitAuthFlows: 
+          - USER_PASSWORD_AUTH
+        UserPoolId: !Ref MoodleUserPool
+
+  MoodleIdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: MoodleIdentityPool
+      AllowUnauthenticatedIdentities: false
+      DeveloperProviderName: com.moodle.accounts
+      CognitoIdentityProviders: 
+        - ClientId: !Ref MoodleClientPool
+          ProviderName: !Sub cognito-idp.us-east-2.amazonaws.com/${MoodleUserPool}
+          ServerSideTokenCheck: false
+      # PushSync: 
+      #   - PushSync
+
+Outputs:
+  MoodleUserPool:
+    Value:
+      Ref: MoodleUserPool
+    Export:
+      Name: !Sub ${Stage}-moodle-pool-id
+  MoodleClientPool:
+    Value:
+      Ref: MoodleClientPool
+    Export:
+      Name: !Sub ${Stage}-moodle-client-id
+  MoodleIdentityPool:
+    Value:
+      Ref: MoodleIdentityPool
+    Export:
+      Name: !Sub ${Stage}-moodle-identity-pool
