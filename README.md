@@ -7,6 +7,6 @@ The current state of AWS Cloudformation, API, and CLI support for Cognito is sti
 The process with which to create the required AWS resources is a combination of scripted and manual steps.  I will do my best to document these in their current state, as I understand them, at the time of writing this (2/10/2018)
 
 
-
+### Disclaimer
 Ultimately the best way to setup the required Cognito resources in an automated fashion is to use a higher level configuration tool such as Ansible or  [Terraform](https://www.terraform.io/docs/providers/aws/r/cognito_user_pool.html)
 
